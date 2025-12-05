@@ -1,3 +1,4 @@
+//#include <iostream>
 #include <bits/stdc++.h>
 using namespace std;
 #define int  long long
@@ -15,39 +16,37 @@ template<typename T> ostream& operator<<(ostream& os, vector<T>& v) { for (auto&
 template<typename T> istream& operator>>(istream& is, vector<T>& v) { for (auto& i : v) is >> i; return is; }
 int nodes,edges;
 vector<vi>adj;
-vector<bool>visited;
-bool hascycle=false;
-bool dfs(int node , int parent){
-    visited[node]=1;
-    for(auto n : adj[node]){
-        if(!visited[n]){
-            if(dfs(n,node)) return true;
-        }
-        else if(n != parent){
-            hascycle = true;
-            return true;
+vector<int>vis;
+int cnt=0;
+void dfs(int u ){
+    vis[u]=1;
+    for(auto v : adj[u]){
+        if(!vis[v]){
+            dfs(v);
         }
     }
-    return false;
 }
 int32_t main(){
-      cin >> nodes >> edges;
-    adj.resize(nodes);
-    visited.resize(nodes,0);
+    cin >> nodes >> edges;
+    adj.resize(nodes+1);
+    vis.resize(nodes+1,0);
     for(int i=0;i<edges;i++){
-        int from ,to;
-        cin >> from >> to;
-        from--;to--;
-        adj[from].push_back(to);
-        adj[to].push_back(from);
+        int u,v;
+       cin >> u >> v ;
+       adj[u].push_back(v);
+       adj[v].push_back(u);
     }
-    dfs(0,0);
-    bool connected=true;
-    for(int i=0;i<nodes;i++){
-        if(!visited[i])  connected = false;
+    vi roads;
+    for(int i=1;i<=nodes;i++){
+        if(!vis[i]){
+            dfs(i);
+            roads.push_back(i);
+        }
     }
-    if(!hascycle && connected && edges==nodes-1) cout << "YES\n";
-    else cout << "NO\n";
- 
+    cout << roads.size()-1 << "\n";
+    for(int i=1;i<roads.size();i++){
+        cout << roads[i-1] << " " << roads[i] << endl;
+    }
+
     return 0;
 }

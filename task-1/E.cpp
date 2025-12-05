@@ -1,3 +1,4 @@
+//#include <iostream>
 #include <bits/stdc++.h>
 using namespace std;
 #define int  long long
@@ -15,39 +16,42 @@ template<typename T> ostream& operator<<(ostream& os, vector<T>& v) { for (auto&
 template<typename T> istream& operator>>(istream& is, vector<T>& v) { for (auto& i : v) is >> i; return is; }
 int nodes,edges;
 vector<vi>adj;
-vector<bool>visited;
-bool hascycle=false;
-bool dfs(int node , int parent){
-    visited[node]=1;
-    for(auto n : adj[node]){
-        if(!visited[n]){
-            if(dfs(n,node)) return true;
-        }
-        else if(n != parent){
-            hascycle = true;
-            return true;
+vector<bool>vis;
+int comp , ed=0;
+void dfs(int u ){
+    comp++;
+    vis[u]=1;
+    for(auto v : adj[u]){
+        if(!vis[v]){
+            dfs(v);
         }
     }
-    return false;
+    ed+=adj[u].size();
 }
 int32_t main(){
-      cin >> nodes >> edges;
-    adj.resize(nodes);
-    visited.resize(nodes,0);
+    // check copmlete Graph
+    // every node connects with all athers 
+    cin >> nodes >> edges;
+    adj.resize(nodes+1);
+    vis.resize(nodes+1,0);
     for(int i=0;i<edges;i++){
-        int from ,to;
-        cin >> from >> to;
-        from--;to--;
-        adj[from].push_back(to);
-        adj[to].push_back(from);
+        int u,v;
+       cin >> u >> v ;
+       u--;v--;
+       adj[u].push_back(v);
+       adj[v].push_back(u);
     }
-    dfs(0,0);
-    bool connected=true;
     for(int i=0;i<nodes;i++){
-        if(!visited[i])  connected = false;
+        if(!vis[i]){
+            comp=0,ed=0;
+            dfs(i);
+            ed/=2;// ofcourse the one edge is count 2-times ya janjonaa
+            if(ed != (comp * (comp-1))/2){
+                cout << "NO\n";
+                return 0;
+            }
+        }
     }
-    if(!hascycle && connected && edges==nodes-1) cout << "YES\n";
-    else cout << "NO\n";
- 
+    cout << "YES\n";
     return 0;
 }
